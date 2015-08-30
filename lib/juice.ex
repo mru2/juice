@@ -7,10 +7,10 @@ defmodule Juice do
     IO.puts "Starting Juice Application"
 
     import Supervisor.Spec, warn: false
-
+    
     children = [
       # Define workers and child supervisors to be supervised
-      # worker(Juice.Worker, [arg1, arg2, arg3])
+      worker(Juice.Soundcloud, [])
     ]
 
     # See http://elixir-lang.org/docs/stable/elixir/Supervisor.html
