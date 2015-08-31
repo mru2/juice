@@ -20,16 +20,9 @@ defmodule Juice.Soundcloud do
   end
 
   # Returns the informations for a given track
-  def track(track_id) do
+  def user(username) do
     :soundcloud
-    |> Client.fetch("/tracks/#{track_id}")
-    |> handle_response(Track)
-  end
-
-  # Returns the informations for a given user
-  def user(user_id) do
-    :soundcloud
-    |> Client.fetch("/users/#{user_id}")
+    |> Client.fetch("/resolve", url: "http://soundcloud.com/#{username}")
     |> handle_response(User)
   end
 

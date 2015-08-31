@@ -48,6 +48,12 @@ defmodule Juice.Soundcloud.Client do
     Poison.decode(body)
   end
 
+  # Redirection on resolve
+  defp process_response({:ok, %HTTPoison.Response{status_code: 302, headers: headers}}) do
+    location = headers |> Enum.find( fn {name, value} -> name == "Location" end ) |> elem(1)
+    HTTPoison.get(location) |> process_response
+  end
+
   # Not found
   defp process_response({:ok, %HTTPoison.Response{status_code: 404}}), do: {:error, :not_found}
 
