@@ -10,8 +10,9 @@ defmodule Juice do
 
     children = [
       # Define workers and child supervisors to be supervised
+      worker(Juice.Store, []),
       worker(Juice.Soundcloud, []),
-      worker(Juice.Store, [])
+      supervisor(Juice.Crawler, [])
     ]
 
     # See http://elixir-lang.org/docs/stable/elixir/Supervisor.html

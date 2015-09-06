@@ -18,6 +18,10 @@ defmodule Juice.Store do
   # Add / update a user
   def update_node(user = %Juice.Soundcloud.User{}), do: upsert(%User{id: user.id, name: user.name, track_count: user.track_count})
 
+  # Counts
+  def user_count, do: count(User)
+  def track_count, do: count(Track)
+
   # Add a like
   def add_like(user_id, track_id) do
     {:ok, like} = case Repo.get_by(Like, user_id: user_id, track_id: track_id) do
@@ -32,6 +36,12 @@ defmodule Juice.Store do
       nil -> Repo.insert record
       found -> Repo.update record
     end
+  end
+
+  # Count records
+  defp count(model) do
+    query = from m in model, select: count(m.id)
+    Repo.one(query)
   end
 
 end
