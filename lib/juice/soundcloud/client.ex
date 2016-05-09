@@ -8,6 +8,7 @@ defmodule Juice.Soundcloud.Client do
   use GenServer
 
   @endpoint "https://api.soundcloud.com"
+  @pool_size 100
 
   # Client API
   def start_link(client_id, opts \\ []) do

@@ -1,11 +1,12 @@
 defmodule Juice.Crawler.Queue do
 
-  alias Juice.JobQueue
+  # No queue, do everything as fast as we can
+  def start_link do
+    Task.Supervisor.start_link(name: __MODULE__)
+  end
 
-  # Wrapper around the job queue
-  def start_link(opts \\ []), do: Agent.start_link(JobQueue, :new, [], name: __MODULE__)
-  def pop, do: Agent.get_and_update(__MODULE__, JobQueue, :pop, [])
-  def push(item), do: Agent.update(__MODULE__, JobQueue, :push, [item])
-  def count, do: Agent.get(__MODULE__, JobQueue, :count, [])
+  def push(item) do
+    Task.Supervisor.start_child(__MODULE__, Juice.Crawler.Worker, :run, [item])
+  end
 
 end

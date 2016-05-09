@@ -31,6 +31,7 @@ defmodule Juice.Mixfile do
     [{:httpoison, "~> 0.6"},
      {:poison, "~> 1.3.1"},
      {:postgrex, ">= 0.0.0"},
+     {:poolboy, "~> 1.5"},
      {:ecto, "~> 1.0"}]
   end
 end

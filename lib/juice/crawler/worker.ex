@@ -4,18 +4,9 @@ defmodule Juice.Crawler.Worker do
   alias Juice.Store
   alias Juice.Soundcloud
 
-  def run do
-    IO.puts "Starting crawler worker"
-    crawl
-  end
-
-  defp crawl do
-    case Queue.pop do
-      nil  -> :timer.sleep(1000)
-      item -> handle_crawl(item)
-    end
-
-    crawl
+  def run(item) do
+    IO.puts "Crawling #{inspect item}"
+    handle_crawl(item)
   end
 
   defp handle_crawl({:fetch_user, username}) do
@@ -26,6 +17,7 @@ defmodule Juice.Crawler.Worker do
   end
 
   defp handle_crawl({:fetch_user_likes, user_id, enqueue_likers}) do
+    IO.puts "Crawling user likes for #{user_id}"
     {:ok, tracks} = Soundcloud.user_likes(user_id)
 
     Enum.each tracks, fn(track) ->
@@ -37,6 +29,7 @@ defmodule Juice.Crawler.Worker do
   end
 
   defp handle_crawl({:fetch_track_likers, track_id}) do
+    IO.puts "Crawling track likers for #{track_id}"
     {:ok, users} = Soundcloud.track_likers(track_id)
 
     Enum.each users, fn(user) ->
