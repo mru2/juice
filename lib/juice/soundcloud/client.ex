@@ -11,8 +11,8 @@ defmodule Juice.Soundcloud.Client do
   @pool_size 100
 
   # Client API
-  def start_link(client_id, opts \\ []) do
-    GenServer.start_link(__MODULE__, client_id, opts)
+  def start_link(client_id) do
+    GenServer.start_link(__MODULE__, client_id)
   end
 
   # Cannot call it get since it is a method defined by HTTPoison
@@ -33,7 +33,6 @@ defmodule Juice.Soundcloud.Client do
     |> HTTPoison.get
     |> process_response
 
-    # TODO : sleep until next allowed call
     {:reply, response, client_id}
   end
 

@@ -4,9 +4,18 @@ defmodule Juice.Crawler.Worker do
   alias Juice.Store
   alias Juice.Soundcloud
 
-  def run(item) do
-    IO.puts "Crawling #{inspect item}"
-    handle_crawl(item)
+  def start_link(_opts) do
+    Task.start_link &work/0
+  end
+
+  def work do
+    case Queue.pop do
+      nil -> :timer.sleep(1000)
+      item ->
+        IO.puts "Crawling #{inspect item}"
+        handle_crawl(item)
+    end
+    work
   end
 
   defp handle_crawl({:fetch_user, username}) do

@@ -1,12 +1,19 @@
 defmodule Juice.Crawler.Queue do
 
-  # No queue, do everything as fast as we can
   def start_link do
-    Task.Supervisor.start_link(name: __MODULE__)
+    Agent.start_link(fn -> :queue.new end, name: __MODULE__)
   end
 
   def push(item) do
-    Task.Supervisor.start_child(__MODULE__, Juice.Crawler.Worker, :run, [item])
+    Agent.update(__MODULE__, fn queue ->
+      :queue.in item, queue
+    end)
   end
 
+  def pop() do
+    case Agent.get_and_update(__MODULE__, &:queue.out/1) do
+      {:value, val} -> val
+      :empty -> nil
+    end
+  end
 end

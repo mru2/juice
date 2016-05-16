@@ -5,38 +5,35 @@ defmodule Juice.Soundcloud do
     Handles call dispatching and responses formatting
   """
 
-  alias Juice.Soundcloud.Client
+  use Supervisor
+
   alias Juice.Soundcloud.Track
   alias Juice.Soundcloud.User
+  alias Juice.Soundcloud.ClientPool
 
   @records_limit 200
 
   # Starts a single global soundcloud client
   def start_link do
-    Client.start_link(
-      System.get_env("SOUNDCLOUD_CLIENT_ID") || raise("SOUNDCLOUD_CLIENT_ID not defined"),
-      name: :soundcloud
-    )
+    client_id = System.get_env("SOUNDCLOUD_CLIENT_ID") || raise("SOUNDCLOUD_CLIENT_ID not defined")
+    ClientPool.start_link(client_id)
   end
 
   # Returns the informations for a given track
   def user(username) do
-    :soundcloud
-    |> Client.fetch("/resolve", url: "http://soundcloud.com/#{username}")
+    ClientPool.fetch("/resolve", url: "http://soundcloud.com/#{username}")
     |> handle_response(User)
   end
 
   # Return the last 200 tracks liked by a user
   def user_likes(user_id) do
-    :soundcloud
-    |> Client.fetch("/users/#{user_id}/favorites", limit: @records_limit)
+    ClientPool.fetch("/users/#{user_id}/favorites", limit: @records_limit)
     |> handle_response(Track)
   end
 
   # Returns the last 200 users who liked a track
   def track_likers(track_id) do
-    :soundcloud
-    |> Client.fetch("/tracks/#{track_id}/favoriters", limit: @records_limit)
+    ClientPool.fetch("/tracks/#{track_id}/favoriters", limit: @records_limit)
     |> handle_response(User)
   end
 

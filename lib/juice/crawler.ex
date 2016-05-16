@@ -6,7 +6,8 @@ defmodule Juice.Crawler do
     # Supervise queue and worker (single for now, throttling at the client-level)
     # Separated since we don't want the crawler to block adds to the queue
     children = [
-      supervisor(Juice.Crawler.Queue, [], [])
+      worker(Juice.Crawler.Queue, [], []),
+      supervisor(Juice.Crawler.WorkerPool, [], [])
     ]
 
     opts = [strategy: :one_for_one, name: Juice.Crawler]
