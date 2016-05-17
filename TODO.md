@@ -1,0 +1,3 @@
+- Handle loops in crawling graph
+- Handle multi-level pagination
+- Constant crawling with last_crawled_at

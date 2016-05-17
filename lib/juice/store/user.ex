@@ -4,7 +4,9 @@ defmodule Juice.Store.User do
   use Ecto.Model
 
   schema "users" do
-    field :name
+    field :display, :string
     field :track_count, :integer
+    field :meta, :map
+    timestamps
   end
 end

@@ -5,20 +5,21 @@ defmodule Juice.Crawler.WorkerPool do
 
   alias Juice.Crawler.Worker
 
-  @pool_size 64
-  @max_overflow 128
-
   defp pool_name() do
     :crawler_worker_pool
   end
 
   # Start a worker pool
   def start_link() do
+    pool_size = Application.get_env(:juice, :worker_concurrency)
+
+    IO.puts "Starting workers with a pool of #{pool_size}"
+
     poolboy_config = [
       name: {:local, pool_name()},
       worker_module: Juice.Crawler.Worker,
-      size: @pool_size,
-      max_overflow: @max_overflow
+      size: pool_size,
+      max_overflow: pool_size * 2
     ]
 
     children = [

@@ -4,15 +4,20 @@ defmodule Juice.Store.Repo.Migrations.CreateSchema do
   def change do
     create table(:tracks, primary_key: false) do
       add :id, :integer, primary_key: true, autogenerate: false
-      add :title, :string
-      add :artist, :string
+      add :display, :string
       add :user_count, :integer
+      add :meta, :json
+
+      timestamps()
     end
 
     create table(:users, primary_key: false) do
       add :id, :integer, primary_key: true, autogenerate: false
-      add :name, :string
+      add :display, :string
       add :track_count, :integer
+      add :meta, :json
+
+      timestamps()
     end
 
     create table(:likes) do

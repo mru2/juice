@@ -4,9 +4,9 @@ defmodule Juice do
   # See http://elixir-lang.org/docs/stable/elixir/Application.html
   # for more information on OTP Applications
   def start(_type, _args) do
-    IO.puts "Starting Juice Application"
-
     import Supervisor.Spec, warn: false
+
+    IO.puts "Starting Juice Application"
 
     children = [
       # Define workers and child supervisors to be supervised
@@ -20,4 +20,5 @@ defmodule Juice do
     opts = [strategy: :one_for_one, name: Juice.Supervisor]
     Supervisor.start_link(children, opts)
   end
+
 end

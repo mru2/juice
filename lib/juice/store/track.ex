@@ -4,8 +4,9 @@ defmodule Juice.Store.Track do
   use Ecto.Model
 
   schema "tracks" do
-    field :title
-    field :artist
+    field :display, :string
     field :user_count, :integer
+    field :meta, :map
+    timestamps
   end
 end

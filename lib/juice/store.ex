@@ -13,10 +13,10 @@ defmodule Juice.Store do
   end
 
   # Add / update a track
-  def update_node(track = %Juice.Soundcloud.Track{}), do: upsert(%Track{id: track.id, artist: track.artist, title: track.title, user_count: track.user_count})
+  def update_node(track = %Juice.Soundcloud.Track{}), do: upsert(%Track{id: track.id, display: track.display, user_count: track.user_count, meta: track.meta})
 
   # Add / update a user
-  def update_node(user = %Juice.Soundcloud.User{}), do: upsert(%User{id: user.id, name: user.name, track_count: user.track_count})
+  def update_node(user = %Juice.Soundcloud.User{}), do: upsert(%User{id: user.id, display: user.display, track_count: user.track_count, meta: user.meta})
 
   # Counts
   def user_count, do: count(User)
@@ -31,10 +31,13 @@ defmodule Juice.Store do
   end
 
   # Upsert a record
+  # If too recent, returns nil
   defp upsert(record) do
     {:ok, record} = case Repo.get(record.__struct__, record.id) do
       nil -> Repo.insert record
-      found -> Repo.update record
+      found ->
+        # TODO : get delta_t here (dt |> Ecto.DateTime.to_erl |> :calendar.datetime_to_gregorian_seconds)
+        Repo.update record
     end
   end
 

@@ -15,7 +15,7 @@ defmodule Juice.Soundcloud do
 
   # Starts a single global soundcloud client
   def start_link do
-    client_id = System.get_env("SOUNDCLOUD_CLIENT_ID") || raise("SOUNDCLOUD_CLIENT_ID not defined")
+    client_id = Application.get_env(:juice, :soundcloud_client_id)
     ClientPool.start_link(client_id)
   end
 

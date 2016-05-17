@@ -5,20 +5,21 @@ defmodule Juice.Soundcloud.ClientPool do
 
   alias Juice.Soundcloud.Client
 
-  @pool_size 20
-  @max_overflow 40
-
   defp pool_name() do
     :soundcloud_client_pool
   end
 
   # Start a worker pool
   def start_link(client_id) do
+    pool_size = Application.get_env(:juice, :api_concurrency)
+
+    IO.puts "Starting api clients with a pool of #{pool_size}"
+
     poolboy_config = [
       name: {:local, pool_name()},
       worker_module: Juice.Soundcloud.Client,
-      size: @pool_size,
-      max_overflow: @max_overflow
+      size: pool_size,
+      max_overflow: pool_size * 2
     ]
 
     children = [
