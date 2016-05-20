@@ -1,5 +1,8 @@
 defmodule Juice.Crawler.Worker do
 
+  # Records should be updated once every day
+  @update_rate 60 * 60 * 24
+
   alias Juice.Crawler.Queue
   alias Juice.Store
   alias Juice.Soundcloud
@@ -30,10 +33,10 @@ defmodule Juice.Crawler.Worker do
     {:ok, tracks} = Soundcloud.user_likes(user_id)
 
     Enum.each tracks, fn(track) ->
-      {:ok, _record} = Store.update_node(track)
+      {:ok, status} = Store.update_node(track)
       {:ok, _record} = Store.add_like(user_id, track.id)
 
-      if enqueue_likers, do: Queue.push({:fetch_track_likers, track.id})
+      if enqueue_likers && enqueue_update?(status), do: Queue.push({:fetch_track_likers, track.id})
     end
   end
 
@@ -42,9 +45,14 @@ defmodule Juice.Crawler.Worker do
     {:ok, users} = Soundcloud.track_likers(track_id)
 
     Enum.each users, fn(user) ->
-      {:ok, _record} = Store.update_node(user)
+      {:ok, status} = Store.update_node(user)
       {:ok, _record} = Store.add_like(user.id, track_id)
-      Queue.push({:fetch_user_likes, user.id, false})
+      if enqueue_update?(status), do: Queue.push({:fetch_user_likes, user.id, false})
     end
   end
+
+  defp enqueue_update?(:created), do: true
+  defp enqueue_update?({:updated, last_update}) when last_update > @update_rate, do: true
+  defp enqueue_update?(_), do: false
+
 end

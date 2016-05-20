@@ -14,7 +14,7 @@ defmodule Juice.Mixfile do
   #
   # Type `mix help compile.app` for more information
   def application do
-    [applications: [:logger, :postgrex, :ecto],
+    [applications: [:logger, :postgrex, :ecto, :httpoison, :poison],
      mod: {Juice, []}]
   end
 
@@ -32,6 +32,7 @@ defmodule Juice.Mixfile do
      {:poison, "~> 1.3.1"},
      {:postgrex, ">= 0.0.0"},
      {:poolboy, "~> 1.5"},
-     {:ecto, "~> 1.0"}]
+     {:ecto, "~> 1.0"},
+     {:exrm, "~> 1.0.4"}]
   end
 end

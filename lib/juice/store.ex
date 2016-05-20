@@ -31,13 +31,15 @@ defmodule Juice.Store do
   end
 
   # Upsert a record
-  # If too recent, returns nil
   defp upsert(record) do
-    {:ok, record} = case Repo.get(record.__struct__, record.id) do
-      nil -> Repo.insert record
+    case Repo.get(record.__struct__, record.id) do
+      nil ->
+        Repo.insert record
+        {:ok, :created}
       found ->
-        # TODO : get delta_t here (dt |> Ecto.DateTime.to_erl |> :calendar.datetime_to_gregorian_seconds)
-        Repo.update record
+        delta_t = last_update(found)
+        Repo.update %{found | meta: record.meta}
+        {:ok, {:updated, delta_t}}
     end
   end
 
@@ -45,6 +47,13 @@ defmodule Juice.Store do
   defp count(model) do
     query = from m in model, select: count(m.id)
     Repo.one(query)
+  end
+
+  # Seconds since last update
+  defp last_update(record) do
+    updated_at = record.updated_at |> Ecto.DateTime.to_erl |> :calendar.datetime_to_gregorian_seconds
+    now = :calendar.local_time |> :calendar.datetime_to_gregorian_seconds
+    now - updated_at
   end
 
 end
