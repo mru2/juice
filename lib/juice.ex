@@ -20,8 +20,6 @@ defmodule Juice do
     opts = [strategy: :one_for_one, name: Juice.Supervisor]
     out = Supervisor.start_link(children, opts)
 
-    Juice.Crawler.launch(Application.get_env(:juice, :crawl_entry))
-
     out
   end
 

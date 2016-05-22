@@ -5,8 +5,7 @@ use Mix.Config
 config :juice,
   soundcloud_client_id: "3b35ba6ef2cb09c97895f4099823af7a",
   worker_concurrency: 64,
-  api_concurrency: 16,
-  crawl_entry: "MrRuru"
+  api_concurrency: 16
 
 config :juice, Juice.Store.Repo,
   adapter: Ecto.Adapters.Postgres,
