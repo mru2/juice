@@ -1,0 +1,71 @@
+#!/usr/bin/env ruby
+
+require './env.rb'
+require 'optparse'
+require 'ostruct'
+require 'csv'
+require 'ruby-progressbar'
+
+DUMP_KINDS = {
+  tracks: {
+    model: Track,
+    fields: [:id, :display]
+  },
+  users: {
+    model: User,
+    fields: [:id, :display]
+  },
+  likes: {
+    model: Like,
+    fields: [:user_id, :track_id]
+  }
+}.freeze
+
+options = OpenStruct.new
+
+parser = OptionParser.new
+
+parser.banner = 'Usage: download <kind: users|tracks|likes> [options]'
+
+parser.on('-o', '--output-file [STRING]', 'Output CSV path') do |output_file|
+  options.output_file = output_file
+end
+
+parser.on('-n', '--no-headers', 'Do not print headers') do |no_headers|
+  options.no_headers = true
+end
+
+parser.on_tail('-h', '--help', 'Print this') do |help|
+  puts parser
+  exit
+end
+
+parser.parse!
+
+unless ARGV.count == 1
+  puts parser
+  exit(1)
+end
+
+dump_kind = ARGV[0].to_sym
+unless DUMP_KINDS.key?(dump_kind)
+  puts parser
+  exit(1)
+end
+
+options.output_file ||= "#{dump_kind}.csv"
+model, fields = DUMP_KINDS[dump_kind].values_at(:model, :fields)
+
+
+progressbar = ProgressBar.create(total: model.count)
+
+CSV.open(options.output_file, 'wb') do |csv|
+  unless options.no_headers
+    csv << fields
+  end
+
+  model.select(*fields).find_each do |record|
+    csv << fields.map { |field| record.send(field) }
+    progressbar.increment
+  end
+end
